@@ -63,6 +63,41 @@ public class HsqlDBTest {
 		assertNull("name should be null, customer does not exist !", name);
 	}
 
+                @Test
+	public void nonExistingProductReturnsNull() throws SQLException {
+		assertNull(myObject.findProduct(151515));
+	}
+	
+	@Test
+	public void findExistingProduct() throws SQLException {		
+		product productTest = myObject.findProduct(0);
+		assertEquals("Iron Iron", productTest.getName());
+	}
+        
+        //Test sur insertProduct
+        
+        @Test
+	public void insertProduct() throws SQLException {
+		product productTestInsert = new product(76,"produitTest", 454);
+		myObject.insertProduct(productTestInsert);
+		assertEquals(productTestInsert.getName(), myObject.findProduct(76).getName());
+                assertEquals(productTestInsert.getPrix(), myObject.findProduct(76).getPrix());
+                assertEquals(productTestInsert.getProductId(), myObject.findProduct(76).getProductId());
+	}
+
+	@Test(expected = SQLException.class)
+	public void CantCreateTwoProductWithSameId() throws SQLException {		
+		product existant = new product(1, "produit Test", 10);
+		myObject.insertProduct(existant);
+	}
+
+	@Test(expected = SQLException.class)
+	public void ifPriceNegative() throws SQLException {		
+		product productTest = new product(100, "produit test", -10);
+		myObject.insertProduct(productTest); 
+	}
+        
+        
 	public static DataSource getDataSource() {
 		org.hsqldb.jdbc.JDBCDataSource ds = new org.hsqldb.jdbc.JDBCDataSource();
 		ds.setDatabase("jdbc:hsqldb:mem:testcase;shutdown=true");
